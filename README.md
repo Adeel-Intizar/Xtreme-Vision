@@ -97,7 +97,7 @@ model.Detect_From_Video(input_path= 'video.mp4',
                         output_path= './tinyyolo.mp4',
                         extract_objects=True)
 ```
-![](assets/yolo.mp4)
+![](assets/out.gif)
 
 For Training on Custom Dataset, Dataset should be in following format
 annotations.txt
@@ -121,3 +121,4 @@ clf.Use_YOLOv4('classes.names')
 clf.load_data('training.txt', './', 'validation.txt', './')
 clf.train(epochs = 10, lr = 0.001)
 ```
+
