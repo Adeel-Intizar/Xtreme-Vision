@@ -1,6 +1,6 @@
 # Xtreme-Vision
 
-[![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
+[![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt) [![PyPI version](https://camo.githubusercontent.com/95db22ec5a6406c2dee95b9f91c9b20ac8d2db57/68747470733a2f2f62616467652e667572792e696f2f70792f696d61676561692e737667)](https://pypi.org/project/xtreme-vision/)
 
 ![](assets/output.png)
 
