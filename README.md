@@ -15,7 +15,7 @@ For Custom Training It Provides:
   - YOLOv4
   - TinyYOLOv4
 
->In Future it not be limited to just Object-Detection, it will provide solution for a wide variety of Computer-Vision Tasks such as Image-Segmentation, Image-Prediction, Auto-Encoders and GANs.
+>In Future it will not be limited to just Object-Detection, it will provide solution for a wide variety of Computer-Vision Tasks such as Image-Segmentation, Image-Prediction, Auto-Encoders and GANs.
 
 >If You Like this Project Please do support it by donating [here](https://patreon.com/adeelintizar)
 
@@ -121,4 +121,3 @@ clf.Use_YOLOv4('classes.names')
 clf.load_data('training.txt', './', 'validation.txt', './')
 clf.train(epochs = 10, lr = 0.001)
 ```
-
