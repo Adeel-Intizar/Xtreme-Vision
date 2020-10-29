@@ -122,3 +122,15 @@ clf.load_data('training.txt', './', 'validation.txt', './')
 clf.train(epochs = 10, lr = 0.001)
 ```
 
+Then Use the following code to load the trained model
+```
+from xtreme_vision.Detection import Object_Detection
+model = Object_Detection()
+model.Use_YOLOv4(classes_path = 'classes.names',
+                weights_path = 'trainedmodel.weights'
+                )
+model.Detect_From_Image(input_path = 'input.jpg',
+                        output_path = 'output.jpg',
+                        extract_objects = True
+                        )
+```
