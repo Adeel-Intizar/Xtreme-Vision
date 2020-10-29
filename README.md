@@ -118,7 +118,7 @@ from xtreme_vision.Detection.Custom import Train_Custom_Detector
 
 clf = Train_Custom_Detector()
 clf.Use_YOLOv4('classes.names')
-clf.load_data('training.txt', './', 'validation.txt', './')
+clf.load_data(train_annots_file, train_images_dir, val_annots_file, val_images_dir)
 clf.train(epochs = 10, lr = 0.001)
 ```
 
