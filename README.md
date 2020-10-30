@@ -19,6 +19,8 @@ For Custom Training It Provides:
 
 >If You Like this Project Please do support it by donating [here](https://patreon.com/adeelintizar)
 
+![](assets/out.gif)
+
 
 ### Dependencies:
   - Tensorflow >= 2.3.0
