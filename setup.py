@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
       name = 'xtreme_vision',
-      version = '1.1.0',
+      version = '1.2',
       description = 'A Python Library for Computer-Vision related Tasks',
       url = "https://github.com/Adeel-Intizar/Xtreme-Vision",
       author = "Adeel Intizar",

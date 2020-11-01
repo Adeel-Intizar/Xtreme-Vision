@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from xtreme_vision.Detection.centernet import PoseEstimation
+from xtreme_vision.Detection.centernet import PoseEstimation as estimate
 import numpy as np
 import cv2
 from PIL import Image
@@ -56,7 +56,7 @@ class Pose_Estimation:
         This Function is used to Specify the Model Type to CenterNet and it Loads the Model.
         """
 
-        self.model = PoseEstimation()
+        self.model = estimate()
         print('-' * 20)
         print('Loading the Model \n Please Wait...')
         print('-' * 20)
