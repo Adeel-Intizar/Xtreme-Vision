@@ -2,11 +2,17 @@
 
 [![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
 
-![](assets/output.png)
-![](assets/pose.png)
+![](output.png)
+![](pose.png)
 
-Xtreme-Vision is a Python Library which is built with simplicity in mind for Computer Vision Tasks, such as Object-Detection, Human-Pose-Estimation, Image-Segmentation Tasks, it provides the support of a list of state-of-the-art algorithms, You can Start Detecting with Pretrained Weights as well as You can train the Models On Custom Dataset. Currently it supports 4 different algorithms. For Detection with pre-trained models it provides:
+Xtreme-Vision is a Python Library which is built with simplicity in mind for Computer Vision Tasks, such as Object-Detection, Human-Pose-Estimation, Image-Segmentation Tasks, it provides the support of a list of state-of-the-art algorithms, You can Start Detecting with Pretrained Weights as well as You can train the Models On Custom Dataset.
 
+Currently, It Provides the Solution for the following Tasks:
+   - Object-Detection
+   - Pose-Estimation
+
+
+For Detection with pre-trained models it provides:
   - RetinaNet
   - CenterNet
   - YOLOv4
@@ -16,9 +22,9 @@ For Custom Training It Provides:
   - YOLOv4
   - TinyYOLOv4
 
-![](assets/gif.gif)
+![](output.gif)
 
-![](assets/out.gif)
+![](pose.gif)
 
 >In Future it will provide solution for a wide variety of Computer-Vision Tasks such as Object-Detection, Pose-Estimation, Image-Segmentation, Image-Prediction, Auto-Encoders and GANs.
 
@@ -62,6 +68,3 @@ model.Detect_From_Image(input_path='kite.jpg',
 from PIL import Image
 Image.open('retinanet.jpg')
 ```
-
-
-    
