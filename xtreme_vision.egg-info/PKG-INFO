@@ -1,0 +1,110 @@
+Metadata-Version: 2.1
+Name: xtreme-vision
+Version: 1.3
+Summary: A Python Library for Computer-Vision related Tasks
+Home-page: https://github.com/Adeel-Intizar/Xtreme-Vision
+Author: Adeel Intizar
+Author-email: kingadeel2017@outlook.com
+Maintainer: Adeel Intizar
+Maintainer-email: kingadeel2017@outlook.com
+License: MIT
+Project-URL: Bug Reports, https://github.com/Adeel-Intizar/Xtreme-Vision/issues
+Project-URL: Funding, https://patreon.com/adeelintizar
+Project-URL: Say Thanks!, https://saythanks.io/to/kingadeel2017%40outlook.com
+Project-URL: Source, https://github.com/Adeel-Intizar/Xtreme-Vision/
+Description: # Xtreme-Vision
+        
+        [![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.txt)
+        
+        ![](output.png)
+        ![](pose.png)
+        ![](mask.jpg)
+        
+        This is the Official Repository of Xtreme-Vision. Xtreme-Vision is a Python Library which is built with simplicity in mind for Computer Vision Tasks, such as Object-Detection, Human-Pose-Estimation, Image-Segmentation Tasks, it provides the support of a list of state-of-the-art algorithms, You can Start Detecting with Pretrained Weights as well as You can train the Models On Custom Dataset.
+        
+        Currently, It Provides the Solution for the following Tasks:
+           - Object-Detection
+           - Pose-Estimation
+           - Image-Segmentation
+        
+        
+        For Detection with pre-trained models it provides:
+          - RetinaNet
+          - CenterNet
+          - YOLOv4
+          - TinyYOLOv4
+          - Mask-RCNN
+        
+        For Custom Training It Provides:
+          - YOLOv4
+          - TinyYOLOv4
+        
+        ![](output.gif)
+        ![](seg.gif)
+        ![](pose.gif)
+        
+        >In Future it will provide solution for a wide variety of Computer-Vision Tasks such as Object-Detection, Pose-Estimation, Image-Segmentation, Image-Prediction, Auto-Encoders and GANs.
+        
+        >If You Like this Project Please do support it by donating here [![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar)
+        
+        
+        ### Dependencies:
+          - Tensorflow >= 2.3.0
+          - Keras
+          - Opencv-python
+          - Numpy
+          - Pillow
+          - Matplotlib
+          - Pandas
+          - Scikit-learn
+          - Progressbar2
+          - Scipy
+          - H5Py
+        
+        
+        ## **`Get Started:`**
+        ```python
+        !pip install xtreme-vision
+        ```
+         >### `For More Tutorials of Xtreme-Vision, Click` [Here](https://github.com/Adeel-Intizar/Xtreme-Vision/tree/master/Tutorials)
+        # **`RetinaNet` Example** 
+        
+        ### **`Image Object_Detection` Using `RetinaNet`** 
+        
+        
+        
+        ```python
+        from xtreme_vision.Detection import Object_Detection
+        
+        model = Object_Detection()
+        model.Use_RetinaNet()
+        model.Detect_From_Image(input_path='kite.jpg',
+                                output_path='./retinanet.jpg', 
+                                extract_objects=True)
+        
+        from PIL import Image
+        Image.open('retinanet.jpg')
+        ```
+        
+Keywords: object detection,computer vision,pose estimation,machine learning,deep learning,artificial intelligence,xtreme_vision,image segmentation,yolo,retinanet,centernet,yolov4,tinyyolo
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: Implementation
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Classifier: Topic :: Scientific/Engineering :: Image Recognition
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.5, <4
+Description-Content-Type: text/markdown

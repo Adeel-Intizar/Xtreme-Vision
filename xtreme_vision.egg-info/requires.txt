@@ -1,0 +1,11 @@
+tensorflow
+keras
+opencv-python
+numpy
+Pillow
+matplotlib
+pandas
+scikit-learn
+progressbar2
+scipy
+h5py

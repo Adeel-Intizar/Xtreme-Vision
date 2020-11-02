@@ -1,0 +1,192 @@
+"""
+Copyright 2017-2018 Fizyr (https://fizyr.com)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+from xtreme_vision.Detection.retinanet import layers
+from xtreme_vision.Detection.retinanet.models import retinanet
+from xtreme_vision.Detection.retinanet.utils.anchors import AnchorParameters
+# import keras_retinanet.backend.tensorflow_backend as backend
+import tensorflow as tf
+
+from xtreme_vision.Segmentation.maskrcnn.layers.roi import RoiAlign
+from xtreme_vision.Segmentation.maskrcnn.layers.upsample import Upsample
+from xtreme_vision.Segmentation.maskrcnn.layers.misc import Shape, ConcatenateBoxes, Cast
+
+
+def default_mask_model(
+    num_classes,
+    pyramid_feature_size=256,
+    mask_feature_size=256,
+    roi_size=(14, 14),
+    mask_size=(28, 28),
+    name='mask_submodel',
+    mask_dtype=tf.keras.backend.floatx(),
+    retinanet_dtype=tf.keras.backend.floatx()
+):
+
+    options = {
+        'kernel_size'        : 3,
+        'strides'            : 1,
+        'padding'            : 'same',
+        'kernel_initializer' : tf.keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
+        'bias_initializer'   : 'zeros',
+        'activation'         : 'relu',
+    }
+
+    inputs  = tf.keras.layers.Input(shape=(None, roi_size[0], roi_size[1], pyramid_feature_size))
+    outputs = inputs
+
+    # casting to the desidered data type, which may be different than
+    # the one used for the underlying keras-retinanet model
+    if mask_dtype != retinanet_dtype:
+        outputs = tf.keras.layers.TimeDistributed(
+            Cast(dtype=mask_dtype),
+            name='cast_masks')(outputs)
+
+    for i in range(4):
+        outputs = tf.keras.layers.TimeDistributed(tf.keras.layers.Conv2D(
+            filters=mask_feature_size,
+            **options
+        ), name='roi_mask_{}'.format(i))(outputs)
+
+    # perform upsampling + conv instead of deconv as in the paper
+    # https://distill.pub/2016/deconv-checkerboard/
+    outputs = tf.keras.layers.TimeDistributed(
+        Upsample(mask_size),
+        name='roi_mask_upsample')(outputs)
+    outputs = tf.keras.layers.TimeDistributed(tf.keras.layers.Conv2D(
+        filters=mask_feature_size,
+        **options
+    ), name='roi_mask_features')(outputs)
+
+    outputs = tf.keras.layers.TimeDistributed(tf.keras.layers.Conv2D(
+        filters=num_classes,
+        kernel_size=1,
+        activation='sigmoid'
+    ), name='roi_mask')(outputs)
+
+    # casting back to the underlying keras-retinanet model data type
+    if mask_dtype != retinanet_dtype:
+        outputs = tf.keras.layers.TimeDistributed(
+            Cast(dtype=retinanet_dtype),
+            name='recast_masks')(outputs)
+
+    return tf.keras.models.Model(inputs=inputs, outputs=outputs, name=name)
+
+
+def default_roi_submodels(num_classes, mask_dtype=tf.keras.backend.floatx(), retinanet_dtype=tf.keras.backend.floatx()):
+    return [
+        ('masks', default_mask_model(num_classes, mask_dtype=mask_dtype, retinanet_dtype=retinanet_dtype)),
+    ]
+
+
+def retinanet_mask(
+    inputs,
+    num_classes,
+    retinanet_model=None,
+    anchor_params=None,
+    nms=True,
+    class_specific_filter=True,
+    name='retinanet-mask',
+    roi_submodels=None,
+    mask_dtype=tf.keras.backend.floatx(),
+    modifier=None,
+    **kwargs
+):
+    """ Construct a RetinaNet mask model on top of a retinanet bbox model.
+
+    This model uses the retinanet bbox model and appends a few layers to compute masks.
+
+    # Arguments
+        inputs                : List of keras.layers.Input. The first input is the image, the second input the blob of masks.
+        num_classes           : Number of classes to classify.
+        retinanet_model       : keras_retinanet.models.retinanet model, returning regression and classification values.
+        anchor_params         : Struct containing anchor parameters. If None, default values are used.
+        nms                   : Use NMS.
+        class_specific_filter : Use class specific filtering.
+        roi_submodels         : Submodels for processing ROIs.
+        mask_dtype            : Data type of the masks, can be different from the main one.
+        modifier              : Modifier for the underlying retinanet model, such as freeze.
+        name                  : Name of the model.
+        **kwargs              : Additional kwargs to pass to the retinanet bbox model.
+    # Returns
+        Model with inputs as input and as output the output of each submodel for each pyramid level and the detections.
+
+        The order is as defined in submodels.
+        ```
+        [
+            regression, classification, other[0], other[1], ..., boxes_masks, boxes, scores, labels, masks, other[0], other[1], ...
+        ]
+        ```
+    """
+    if anchor_params is None:
+        anchor_params = AnchorParameters.default
+
+    if roi_submodels is None:
+        retinanet_dtype = tf.keras.backend.floatx()
+        tf.keras.backend.set_floatx(mask_dtype)
+        roi_submodels = default_roi_submodels(num_classes, mask_dtype, retinanet_dtype)
+        tf.keras.backend.set_floatx(retinanet_dtype)
+
+    image = inputs
+    image_shape = Shape()(image)
+
+    if retinanet_model is None:
+        retinanet_model = retinanet.retinanet(
+            inputs=image,
+            num_classes=num_classes,
+            num_anchors=anchor_params.num_anchors(),
+            **kwargs
+        )
+
+    if modifier:
+        retinanet_model = modifier(retinanet_model)
+
+    # parse outputs
+    regression     = retinanet_model.outputs[0]
+    classification = retinanet_model.outputs[1]
+    other          = retinanet_model.outputs[2:]
+    features       = [retinanet_model.get_layer(name).output for name in ['P3', 'P4', 'P5', 'P6', 'P7']]
+
+    # build boxes
+    anchors = retinanet.__build_anchors(anchor_params, features)
+    boxes = layers.RegressBoxes(name='boxes')([anchors, regression])
+    boxes = layers.ClipBoxes(name='clipped_boxes')([image, boxes])
+
+    # filter detections (apply NMS / score threshold / select top-k)
+    detections = layers.FilterDetections(
+        nms                   = nms,
+        class_specific_filter = class_specific_filter,
+        max_detections        = 100,
+        name                  = 'filtered_detections'
+    )([boxes, classification] + other)
+
+    # split up in known outputs and "other"
+    boxes  = detections[0]
+    scores = detections[1]
+
+    # get the region of interest features
+    rois = RoiAlign()([image_shape, boxes, scores] + features)
+
+    # execute maskrcnn submodels
+    maskrcnn_outputs = [submodel(rois) for _, submodel in roi_submodels]
+
+    # concatenate boxes for loss computation
+    trainable_outputs = [ConcatenateBoxes(name=name)([boxes, output]) for (name, _), output in zip(roi_submodels, maskrcnn_outputs)]
+
+    # reconstruct the new output
+    outputs = [regression, classification] + other + trainable_outputs + detections + maskrcnn_outputs
+
+    return tf.keras.models.Model(inputs=inputs, outputs=outputs, name=name)
