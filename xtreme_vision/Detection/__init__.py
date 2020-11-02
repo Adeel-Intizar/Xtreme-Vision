@@ -35,7 +35,7 @@ import tensorflow as tf
 class Object_Detection:
     
     """
-    This is Object_Detection class in the extreme_vision library, it provides support of state-of-the-art Models 
+    This is Object_Detection class in the xtreme_vision library, it provides support of state-of-the-art Models 
     like RetinaNet, CenterNet, YOLOv4 and TinyYOLOv4. After Instantiating this class you can set its properties
     and use pre-defined functions for Detecting Objects out of the box.
     

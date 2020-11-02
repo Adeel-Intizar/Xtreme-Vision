@@ -4,12 +4,14 @@
 
 ![](output.png)
 ![](pose.png)
+![](mask.jpg)
 
 This is the Official Repository of Xtreme-Vision. Xtreme-Vision is a Python Library which is built with simplicity in mind for Computer Vision Tasks, such as Object-Detection, Human-Pose-Estimation, Image-Segmentation Tasks, it provides the support of a list of state-of-the-art algorithms, You can Start Detecting with Pretrained Weights as well as You can train the Models On Custom Dataset.
 
 Currently, It Provides the Solution for the following Tasks:
    - Object-Detection
    - Pose-Estimation
+   - Image-Segmentation
 
 
 For Detection with pre-trained models it provides:
@@ -17,13 +19,14 @@ For Detection with pre-trained models it provides:
   - CenterNet
   - YOLOv4
   - TinyYOLOv4
+  - Mask-RCNN
 
 For Custom Training It Provides:
   - YOLOv4
   - TinyYOLOv4
 
 ![](output.gif)
-
+![](seg.gif)
 ![](pose.gif)
 
 >In Future it will provide solution for a wide variety of Computer-Vision Tasks such as Object-Detection, Pose-Estimation, Image-Segmentation, Image-Prediction, Auto-Encoders and GANs.
@@ -49,7 +52,7 @@ For Custom Training It Provides:
 ```python
 !pip install xtreme-vision
 ```
- >### `For More Tutorials of Xtreme-Vision, Click` [Here](https://github.com/Adeel-Intizar/Xtreme-Vision/tree/main/Tutorials)
+ >### `For More Tutorials of Xtreme-Vision, Click` [Here](https://github.com/Adeel-Intizar/Xtreme-Vision/tree/master/Tutorials)
 # **`RetinaNet` Example** 
 
 ### **`Image Object_Detection` Using `RetinaNet`** 

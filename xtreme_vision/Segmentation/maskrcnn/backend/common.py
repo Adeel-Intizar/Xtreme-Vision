@@ -1,0 +1,46 @@
+"""
+Copyright 2017-2018 Fizyr (https://fizyr.com)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+from tensorflow.keras import backend
+
+def log2(x):
+    return backend.log(x) / backend.log(backend.cast(2.0, x.dtype))
+
+
+def overlap(a, b):
+    """ Computes the IoU overlap of boxes in a and b.
+
+    Args
+        a: np.array of shape (N, 4) of boxes.
+        b: np.array of shape (K, 4) of boxes.
+
+    Returns
+        A np.array of shape (N, K) of overlap between boxes from a and b.
+    """
+    area = (b[:, 2] - b[:, 0]) * (b[:, 3] - b[:, 1])
+
+    iw = backend.minimum(backend.expand_dims(a[:, 2], axis=1), b[:, 2]) - backend.maximum(backend.expand_dims(a[:, 0], axis=1), b[:, 0])
+    ih = backend.minimum(backend.expand_dims(a[:, 3], axis=1), b[:, 3]) - backend.maximum(backend.expand_dims(a[:, 1], axis=1), b[:, 1])
+
+    iw = backend.maximum(iw, 0)
+    ih = backend.maximum(ih, 0)
+
+    ua = backend.expand_dims((a[:, 2] - a[:, 0]) * (a[:, 3] - a[:, 1]), axis=1) + area - iw * ih
+    ua = backend.maximum(ua, backend.epsilon())
+
+    intersection = iw * ih
+
+    return intersection / ua

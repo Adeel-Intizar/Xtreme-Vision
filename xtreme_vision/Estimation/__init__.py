@@ -77,7 +77,7 @@ class Pose_Estimation:
         """
         
         if self.modelLoaded != True:
-            raise RuntimeError ('Before Using This Function, Please Specify which Model you want to Use.')
+            raise RuntimeError ('Before calling this function, you have to call Use_CenterNet().')
               
         img = np.array(Image.open(input_path))[..., ::-1]
               
@@ -100,7 +100,7 @@ class Pose_Estimation:
         """
     
         if self.modelLoaded != True:
-            raise RuntimeError ('Before Using This Function, Please Specify which Model you want to Use.')
+            raise RuntimeError ('Before calling this function, you have to call Use_CenterNet().')
 
         out = None
         cap = cv2.VideoCapture(input_path)

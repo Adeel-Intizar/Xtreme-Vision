@@ -85,7 +85,7 @@ def shift(shape, stride, anchors):
     return shifted_anchors
 
 
-def map_fn(*args, **kwargs):
+def map_output(*args, **kwargs):
     """ See https://www.tensorflow.org/api_docs/python/tf/map_fn .
     """
 

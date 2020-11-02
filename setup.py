@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+from xtreme_vision import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
       name = 'xtreme_vision',
-      version = '1.2',
+      version = __version__,
       description = 'A Python Library for Computer-Vision related Tasks',
       url = "https://github.com/Adeel-Intizar/Xtreme-Vision",
       author = "Adeel Intizar",

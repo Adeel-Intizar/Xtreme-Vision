@@ -176,7 +176,7 @@ class FilterDetections(keras.layers.Layer):
         dtypes = [keras.backend.floatx(), keras.backend.floatx(), 'int32'] + [o.dtype for o in other]
         shapes = [(self.max_detections, 4), (self.max_detections,), (self.max_detections,)]
         shapes.extend([(self.max_detections,) + o.shape[2:] for o in other])
-        outputs = backend.map_fn(
+        outputs = backend.map_output(
             _filter_detections,
             elems=[boxes, classification, other],
             dtype=dtypes,
