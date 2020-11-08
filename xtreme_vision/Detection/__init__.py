@@ -85,33 +85,66 @@ class Object_Detection:
         self.yolo_classes = ""
         self.input_shape = 0
         
-    def Use_RetinaNet(self, weights_path:str = None):
+    def Use_RetinaNet(self, weights_path:str = None, classes_path:str=None, backbone:str='resnet50'):
         
         """
         This Function is Used to set the Model Type to RetinaNet and Loads the Model, 
         Automatically downloads weights if weights_path is None
         
         param : weights_path (path to downloaded pretrained weights of retinanet50)
+        param: classes (dictionary mapping integers to labels) e.g classes= {0:'Lion', 1:'Fox'}
         """
+        
+        if 'resnet' not in backbone:
+          raise RuntimeError ('Invalid BackBone: Valid BackBones are "resnet50"\t"resnet101"\t"resnet152".')
         
         if weights_path is None:
           path = 'xtreme_vision/weights/retinanet_weights.h5'
           if os.path.isfile(path):
+
             print('Found Existing Weights File...\nLoading Existing File...')
             self.weights_path = path
           else:
-            print('Downloading Weights File...\nPlease Wait...')
-            self.weights_path = tf.keras.utils.get_file('retinanet_weights.h5',
-            'https://github.com/fizyr/keras-retinanet/releases/download/0.5.1/resnet50_coco_best_v2.1.0.h5',
-            cache_subdir = 'weights/', cache_dir = 'xtreme_vision')
+
+            if backbone == 'resnet50':
+              print('-' * 20)
+              print('Downloading Weights File...\nPlease Wait...')
+              print('-' * 20)
+              self.weights_path = tf.keras.utils.get_file('retinanet_weights.h5',
+              						'https://github.com/fizyr/keras-retinanet/releases/download/0.5.1/resnet50_coco_best_v2.1.0.h5',
+                  					cache_subdir = 'weights/', cache_dir = 'xtreme_vision')
+          
+            elif backbone == 'resnet101':
+              print('-' * 20)
+              print('Downloading Weights File...\nPlease Wait...')
+              print('-' * 20)
+              self.weights_path = tf.keras.utils.get_file('retinanet_weights.h5',
+                                                        'https://github.com/fizyr/keras-retinanet/releases/download/0.5.1/resnet101_oid_v1.0.0.h5',
+                                                        cache_subdir = 'weights/', cache_dir = 'xtreme_vision')
+
+            elif backbone == 'resnet152':
+             print('-' * 20)
+             print('Downloading Weights File...\nPlease Wait...')
+             print('-' * 20)
+             self.weights_path = tf.keras.utils.get_file('retinanet_weights.h5',
+                                                        'https://github.com/fizyr/keras-retinanet/releases/download/0.5.1/resnet152_oid_v1.0.0.h5',
+                                                        cache_subdir = 'weights/', cache_dir = 'xtreme_vision')
         else:
           if os.path.isfile(weights_path):
             self.weights_path = weights_path
           else:
             raise FileNotFoundError ("Weights File Doesn't Exist at Provided Path. Please Provide Valid Path.")
+    
+        self.classes = None
+        if classes_path != None:
+          self.classes = {}
+          with open(classes_path, 'r') as f:
+            for line in f:
+              (key, val) = line.split()
+              self.classes[int(key)] = val
         
         self.model = RetinaNet()
-        self.model.load_model(self.weights_path)
+        self.model.load_model(self.weights_path, self.classes, backbone)
         self.modelLoaded = True
         self.modelType = 'retinanet'
     

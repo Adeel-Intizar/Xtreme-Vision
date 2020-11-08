@@ -54,11 +54,15 @@ class RetinaNet:
                    68: 'microwave', 69: 'oven', 70: 'toaster', 71: 'sink', 72: 'refrigerator', 73: 'book', 74: 'clock', 75: 'vase', 76: 'scissors',
                    77: 'teddy bear', 78: 'hair drier', 79: 'toothbrush'}
         
-    def load_model(self, Weights_Path:str = None):
+    def load_model(self, Weights_Path:str = None, classes:dict=None, backbone:str='resnet50'):
+        
+        if classes != None:
+            self.classes = classes
+        
         if Weights_Path is None:
             raise RuntimeError ('Weights_Path should not be None.')
         self.weights_path = Weights_Path
-        self.model = models.load_model(self.weights_path, backbone_name = 'resnet50')
+        self.model = models.load_model(self.weights_path, backbone_name = backbone)
         
     def predict(self, img_path: np.ndarray = None, output_path:str = None, debug=True, custom_objects = None,
                 extract_objects = False, min_prob:float = 0.25):
@@ -115,5 +119,3 @@ class RetinaNet:
             cv2.imwrite(self.output_path, detected_img)
         
         return detected_img
-
-

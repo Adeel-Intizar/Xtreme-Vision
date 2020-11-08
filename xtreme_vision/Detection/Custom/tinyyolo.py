@@ -28,7 +28,7 @@ from xtreme_vision.Detection.yolov4.tf import YOLOv4, SaveWeightsCallback
 import os
 import tensorflow as tf
 
-class Train_Custom_Detector:
+class Train_TinyYOLOv4:
     
     """
     This is the Train-Custom-Detector class in the xtreme_vision library, it provides support of state-of-the-art
@@ -51,45 +51,17 @@ class Train_Custom_Detector:
     
     def __init__(self):
         
-        self.modelLoaded = False
         self.modelType = ""
         
         self.classes = None
         self.model = None
         
         
-    def Use_YOLOv4(self, classes_path = None, input_size:int = 608, batch_size:int = 4):
+    def create_model(self, classes_path = None, input_size:int = 640, batch_size:int = 32):
         
         """
         This function is used to specify the modelType to yolov4 and it instantiates the model.
         You can set the following parameters as well
-        
-        param: classes_path (path to the classes file containing the labels and it has to be (.names) file) required
-        param: *input_size (size of the input image, it has to be mutiple of 32) optional
-        param: *batch_size (batch size for the model, if your RAM exausted, decrease the batch_size) optional
-        """
-        
-        if classes_path is not None:
-            if os.path.isfile(classes_path):
-              self.classes = classes_path
-            else:
-              raise FileNotFoundError ('File Does not exist. Please Provide Valid Classes_Path')
-        else:
-          raise FileNotFoundError ('Classes_Path is Mandatory. Please Provide Valid Classes_Path')
-
-        self.model = YOLOv4()
-        self.model.classes = self.classes
-        self.model.input_size = input_size
-        self.model.batch_size = batch_size
-        
-        self.modelType = 'yolov4'
-        self.modelLoaded = True
-        
-    def Use_TinyYOLOv4(self, classes_path = None, input_size:int = 960, batch_size:int = 32):
-        
-        """
-        This function is used to specify the modelType to tinyyolov4 and it instantiates the model.
-        You can optionally set the following parameters as well
         
         param: classes_path (path to the classes file containing the labels and it has to be (.names) file) required
         param: *input_size (size of the input image, it has to be mutiple of 32) optional
@@ -110,14 +82,12 @@ class Train_Custom_Detector:
         self.model.batch_size = batch_size
         
         self.modelType = 'tinyyolov4'
-        self.modelLoaded = True
-        
-        
+
         
     def load_data(self, train_annot_path:str, train_img_dir:str, val_annot_path:str, val_img_dir:str, weights_path:str=None):
         
         """
-        This function is used to load the data for traininig the model, if you have pretrained weights file, set its path
+        This function is used to load the data for traininig the YOLO models, if you have pretrained weights file, set its path
         to the weights_path, or if you leave it to None, it will automatically download the pretrained weights for 
         retraining.
         
@@ -168,16 +138,13 @@ class Train_Custom_Detector:
         self.model.make_model()
 
         if weights_path is None:
-          if (self.modelType == 'yolov4'):
-            path = 'xtreme_vision/weights/yolotrain.weights'
-            name = 'yolotrain.weights'
-            url = 'https://github.com/Adeel-Intizar/Xtreme-Vision/releases/download/1.0/yolov4.conv.137'
-          elif (self.modelType == 'tinyyolov4'):
+
+          if (self.modelType == 'tinyyolov4'):
             path = 'xtreme_vision/weights/tinyyolotrain.weights'
             name = 'tinyyolotrain.weights'
             url = 'https://github.com/Adeel-Intizar/Xtreme-Vision/releases/download/1.0/yolov4-tiny.conv.29'
           else:
-            pass
+            raise RuntimeError ('Invalid ModelType: Valid type is TinyYOLOv4.')
 
           if os.path.isfile(path):
             print('Found Existing File...\nLoading existing file...')
@@ -194,8 +161,8 @@ class Train_Custom_Detector:
           
         self.model.load_weights(self.weights_path, weights_type = 'yolo')
         
-    
-    def train(self, epochs:int = 1, lr:float = 0.001):
+
+    def train(self, epochs:int, lr:float, steps_per_epoch:int=1):
         
         """
         This function is used to Train the model, it uses Adam Optimizer to train, and it saves the weights of every 
@@ -207,34 +174,37 @@ class Train_Custom_Detector:
         param: lr (learning rate for the model)
         """
         
-        self.optimizer = optimizers.Adam(learning_rate = lr)
-        self.model.compile(optimizer = self.optimizer, loss_iou_type = 'ciou')
+        if (self.modelType=='tinyyolov4'):
+            self.optimizer = optimizers.Adam(learning_rate = lr)
+            self.model.compile(optimizer = self.optimizer, loss_iou_type = 'ciou', loss_verbose=0)
         
         
-        def lr_scheduler(epoch):
-            if epoch < int(epochs * 0.5):
-                return lr 
-            elif epoch < int(epochs * 0.7):
-                return lr * 0.1
-            return lr * 0.01
+            def lr_scheduler(epoch):
+                if epoch < int(epochs * 0.5):
+                    return lr 
+                elif epoch < int(epochs * 0.7):
+                    return lr * 0.1
+                return lr * 0.01
 
-        self.model.fit(
-            self.train_dataset,
-            epochs = epochs,
-            callbacks=[
-                callbacks.LearningRateScheduler(lr_scheduler),
-                callbacks.TerminateOnNaN(),
-                callbacks.TensorBoard(
-                    histogram_freq=1,
-                    log_dir="./logs"),
+            self.model.fit(
+                self.train_dataset,
+                epochs = epochs,
+                callbacks=[
+                    callbacks.LearningRateScheduler(lr_scheduler),
+                    callbacks.TerminateOnNaN(),
+                    callbacks.TensorBoard(
+                        histogram_freq=1,
+                        log_dir="./logs"),
                     
-                SaveWeightsCallback(
-                    yolo= self.model,
-                    dir_path= "./model_weights",
-                    weights_type= "yolo",
-                    epoch_per_save= 1),
-                ],
-            validation_data=self.val_dataset,
-            validation_steps = 50,
-            steps_per_epoch = 100)
+                    SaveWeightsCallback(
+                        yolo= self.model,
+                        dir_path= "./model_weights",
+                        weights_type= "yolo",
+                        epoch_per_save= 1),
+                    ],
+                validation_data=self.val_dataset,
+                validation_steps = 1,
+                steps_per_epoch = steps_per_epoch)
+        else:
+            raise RuntimeError ('Invalid ModelType: Valid Type is YOLOv4')
             
