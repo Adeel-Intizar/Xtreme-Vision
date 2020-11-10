@@ -23,6 +23,8 @@ SOFTWARE.
 """
 
 
+from xtreme_vision.Segmentation.deeplab.semantic import semantic_segmentation
+from xtreme_vision.Segmentation.maskrcnn import MaskRCNN
 from xtreme_vision.Segmentation.maskrcnn import MaskRCNN
 import numpy as np
 import cv2
@@ -101,6 +103,29 @@ class Segmentation:
         self.model.load_model(self.weights_path)
         self.modelLoaded = True
         self.modelType = 'maskrcnn'
+        
+        
+    def Use_DeepLabv3(self, weights_path:str = None):
+        if weights_path is None:
+          path = 'xtreme_vision/weights/deeplab_weights.h5'
+          if os.path.isfile(path):
+            print('Found Existing Weights File...\nLoading Existing File...')
+            self.weights_path = path
+          else:
+            print('Downloading Weights File...\nPlease Wait...')
+            self.weights_path = tf.keras.utils.get_file('deeplab_weights.h5',
+            'https://github.com/ayoolaolafenwa/PixelLib/releases/download/1.3/deeplabv3_xception65_ade20k.h5',
+            cache_subdir = 'weights/', cache_dir = 'xtreme_vision')
+        else:
+          if os.path.isfile(weights_path):
+            self.weights_path = weights_path
+          else:
+            raise FileNotFoundError ("Weights File Doesn't Exist at Provided Path. Please Provide Valid Path.")
+            
+        self.model = semantic_segmentation()
+        self.model.load_ade20k_model(self.weights_path)
+        self.modelLoaded = True
+        self.modelType = 'deeplab'
   
         
     def Detect_From_Image(self, input_path:str, output_path:str, min_prob:float=0.25, show_names:bool=False):
@@ -134,8 +159,11 @@ class Segmentation:
             if self.modelType == 'maskrcnn':
                 _ = self.model.predict(img, self.output_path, min_prob=self.min_prob, show_names=self.show_names)
                 
+            elif self.modelType == 'deeplab':
+                raw_labels, img = self.model.segmentAsAde20k(self.input_path, self.output_path, overlay=True)
+            
             else:
-              raise RuntimeError ('Invalid ModelType: Valid Types is "MaskRCNN".')
+              raise RuntimeError ('Invalid ModelType: Valid Types are "MaskRCNN"\t"DeepLab".')
                 
                 
     def Detect_From_Video(self, input_path:str, output_path:str, min_prob:float=0.25, show_names:bool=False):
@@ -175,13 +203,16 @@ class Segmentation:
             if not retreive:
                 break
             
-            frame = np.array(frame)[..., ::-1]
+            fr = np.array(frame)[..., ::-1]
             
             if self.modelType == 'maskrcnn':
-                im = self.model.predict(frame, './', False, min_prob=self.min_prob, show_names=self.show_names)
+                im = self.model.predict(fr, './', False, min_prob=self.min_prob, show_names=self.show_names)
+                
+            elif self.modelType == 'deeplab':
+                _, im = self.model.segmentFrameAsAde20k(frame, overlay = True)
 
             else:
-              raise RuntimeError ('Invalid ModelType: Valid Type is  "MaskRCNN".')
+              raise RuntimeError ('Invalid ModelType: Valid Types are  "MaskRCNN"\t"DeepLab".')
             
             if out is None:
                 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
