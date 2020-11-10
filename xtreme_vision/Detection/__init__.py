@@ -35,36 +35,21 @@ import tensorflow as tf
 class Object_Detection:
     
     """
-    This is Object_Detection class in the xtreme_vision library, it provides support of state-of-the-art Models 
-    like RetinaNet, CenterNet, YOLOv4 and TinyYOLOv4. After Instantiating this class you can set its properties
-    and use pre-defined functions for Detecting Objects out of the box.
-    
-    The Following Functions are required to be called in a 'SEQUENCE' before you can Detect_Objects:
-        First you have to specify which Model you want to Use, you can do it by calling one of the Functions:
-           
-            Use_RetinaNet(model_weights_path)
-            Use_CenterNet(model_weights_path)
-            Use_YOLOv4(model_weights_path, yolo_classes_path)
-            Use_TinyYOLOv4(model_weights_path, yolo_classes_path)
-            
-        Image Object Detection:
-            
-            Detect_From_Image(input_image_path, output_image_path)
-            
-        Video Object Detection:
-            
-            Detect_From_Video(camera_input, input_path, output_path)
-            
-        Custom Objects:
-            
-            If you want to detect one of the objects given in Custom_Objects() function set the objects to true
-            e.g.    objects = Custom_Objects(person = True, car = True)
-                    Detect_Custom_Objects_From_Image(objects, input_image_path, output_image_path)
-                
-            If you want to detect custom objects from video
-            e.g.    objects = Custom_Objects(person = True, car = True)
-                    Detect_Custom_Objects_From_Video(objects, input_image_path, output_image_path)
-                
+    This is Object Detection Class in Xtreme-Vision Library, it provides the support of State-Of-The-Art Models 
+    like CenterNet, RetinaNet, YOLOv4 and TinyYOLOv4. After Instantiating this Class, you can set its
+    properties and use pre-defined functions for performing Object Detection Tasks out of the box.
+
+
+        Use_RetinaNet()                    |        # To Set which Model to Use
+        Use_CenterNet()                    |        # To Set which Model to Use
+        Use_YOLOv4()                       |        # To Set which Model to Use 
+        Use_TinyYOLOv4()                   |        # To Set which Model to Use
+        
+        Detect_From_Image()                         # To Detect Objects from Images
+        Detect_From_Video()                         # To Detect Objects from Videos
+        Custom_Objects()                            # To set the desired objects to True e.g. Custom_Objects(car=True)
+        Detect_Custom_Objects_From_Image()          # To Detect Custom Objects from Images
+        Detect_Custom_Objects_From_Video()          # To Detect Custom Objects from Videos  
     """
     
     def __init__(self):
@@ -87,13 +72,24 @@ class Object_Detection:
         
     def Use_RetinaNet(self, weights_path:str = None, classes_path:str=None, backbone:str='resnet50'):
         
-        """
-        This Function is Used to set the Model Type to RetinaNet and Loads the Model, 
-        Automatically downloads weights if weights_path is None
-        
-        param : weights_path (path to downloaded pretrained weights of retinanet50)
-        param: classes (dictionary mapping integers to labels) e.g classes= {0:'Lion', 1:'Fox'}
-        """
+      """[This Function is Used to Set the Model Type to RetinaNet, Automatically downloads the model
+      weights if weights_path is None and Loads the Model]
+
+      Args:
+        weights_path: path to the trained weights file
+        classes_path: path to the txt file mapping classes to labels 
+                    e.g. 
+                        0 Cat
+                        1 Dog
+                        2 Monkey etc
+                    If not Provided, Model will use 80 "Coco Dataset" classes by default
+                    
+        backbone: which backbone to use 
+      
+      Raises:
+          RuntimeError: [If any other backbone is provided other than resnet50, resnet101 or resnet152]
+          FileNotFoundError: [If Specified weights_path doesn't contain the weights file]
+      """
         
         if 'resnet' not in backbone:
           raise RuntimeError ('Invalid BackBone: Valid BackBones are "resnet50"\t"resnet101"\t"resnet152".')
@@ -150,12 +146,15 @@ class Object_Detection:
     
     def Use_CenterNet(self, weights_path:str = None):
         
-        """
-        This Function is Used to set the Model Type to CenterNet and Loads the Model,
-        Automatically downloads weights if weights_path is None
-        
-        param: weights_path (path to downloaded pretrained weights of centernet)
-        """
+      """[This Function is used to set the Model Type to CenterNet, Automatically downloads the Model
+      weights if weights_path is None and Loads the Model.]
+      
+      Args:
+        weights_path: path to the trained weights_file
+
+      Raises:
+          FileNotFoundError: [If weights file doesn't exist at specified path]
+      """
         
         if weights_path is None:
           path = 'xtreme_vision/weights/centernet_weights.h5'
@@ -181,16 +180,29 @@ class Object_Detection:
     def Use_YOLOv4(self, weights_path:str = None, classes_path:str = None, input_shape:int = 640,
                    iou = 0.45, score = 0.25):
         
-        """
-        This Function is Used to set the Model Type to YOLOv4 and Loads the Model,
+      """[This Function is Used to set the Model Type to YOLOv4 and Loads the Model,
         Automatically downloads weights and classses files if weights_path or classes_path is None, 
         you can optionally set the input_shape as well. Dont change to values of iou and score, these
-        values are recommended.
+        values are recommended.]
         
-        param: weights_path (path to downloaded pretrained weights of YOLOv4)
-        param: classes_path (path to file containg names of classes e.g. "coco.names")
-        param: input_shape (input_shape to set for the model, it has to be multiple of 32)
-        """
+      Args:
+        weights_path: path to the trained weights file
+        classes_path: path to the classes file with (.names) extension containg classes according to labels
+                    e.g. classes.names
+                    [
+                      Cat
+                      Dog
+                      Monkey
+                      etc
+                    ]
+                    If not Provided, Model will use 80 "Coco Classes" by default
+                    
+        input_shape: input_shape for the Model, it has to be multiple of 32
+
+      Raises:
+          FileNotFoundError: [If trained weights file doesn't exist at specified path]
+          FileNotFoundError: [If classes_file doesn't exist at specified path]
+      """
         
         if weights_path is None:
           path = 'xtreme_vision/weights/yolo.weights'
@@ -236,16 +248,29 @@ class Object_Detection:
     def Use_TinyYOLOv4(self, weights_path:str = None, classes_path:str = None, input_shape:int = 960,
                        iou = 0.4, score = 0.1):
         
-        """
-        This Function is Used to set the Model Type to TinyYOLOv4 and Loads the Model,
-        Automatically downloads weights and classes files if weights_path or classes_path is None,
-        you can optionally set the input_shape as well. Dont change the values of iou and score, 
-        these are the Recommended values.
+      """[This Function is Used to set the Model Type to TinyYOLOv4 and Loads the Model,
+        Automatically downloads weights and classses files if weights_path or classes_path is None, 
+        you can optionally set the input_shape as well. Dont change to values of iou and score, these
+        values are recommended.]
         
-        param: weights_path (path to downloaded pretrained weights of TinyYOLOv4)
-        param: classes_path (path to file containg names of classes e.g. "coco.names")
-        param: input_shape (input_shape to set for the model, it has to be multiple of 32)        
-        """
+      Args:
+        weights_path: path to the trained weights file
+        classes_path: path to the classes file with (.names) extension containg classes according to labels
+                    e.g. classes.names
+                    [
+                      Cat
+                      Dog
+                      Monkey
+                      etc
+                    ]
+                    If not Provided, Model will use 80 "Coco Classes" by default
+                    
+        input_shape: input_shape for the Model, it has to be multiple of 32
+
+      Raises:
+          FileNotFoundError: [If trained weights file doesn't exist at specified path]
+          FileNotFoundError: [If classes_file doesn't exist at specified path]
+      """
         
         if weights_path is None:
           path = 'xtreme_vision/weights/tinyyolo.weights'
@@ -291,16 +316,17 @@ class Object_Detection:
         
     def Detect_From_Image(self, input_path:str, output_path:str, extract_objects = False):
         
-        """
-        This function is used to detect objects from images, it takes input_image_path for a valid input image 
-        such as jpg and png, and it takes output_image_path to which it saves the output image.
-        
-        
-        param: image_path (path to the Image in which you want to detect objects)
-        param: output_path (path to the directory where you want to save the output image)
-        param: extract_objects (for extracting objects detected in images set this to True,
-                                only RetinaNet Supports it)
-        """
+      """[This Function is used to Detect objects from Images]
+      
+      Args:
+        input_path: path to the input image with jpg/jpeg/png extension
+        output_path: path to save the output image with jpg/jpeg/png extension
+        extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+
+      Raises:
+          RuntimeError: [If input_path or output_path is not specified]
+          RuntimeError: [If Model is not Loaded before using this function]
+      """
         
         if (input_path is None) or (output_path is None):
             raise RuntimeError ('Image_Path AND Output_Path Should Not Be None.')
@@ -330,17 +356,18 @@ class Object_Detection:
                 
     def Detect_From_Video(self, input_path:str, output_path:str, extract_objects = False):
         
-        """
-        This function is used to detect objects from videos, it takes input_video_path for a valid video
-        such as mp4, avi, and it takes output_video_path to which it saves the output video.
-        
-        User Must Specify Input_Path and Output_Path otherwise it will raise the Error.
-        
-        param: input_path (path to the video in which you want to detect objects)
-        param: output_path (path to the directory where the output video will be saved)
-        param: extract_objects (set it to true if you want to extract detected objects,
-                                Only RetinaNet Supports it)
-        """
+      """[This Function is used to Detect objects from Videos.]
+      
+      Args:
+        input_path: path to the input video with mp4/avi extension
+        output_path: path to save the output video with mp4/avi extension
+        extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+
+      Raises:
+          RuntimeError: [If input_path or output_path is not specified]
+          RuntimeError: [If Model is not Loaded before using this Function]
+          RuntimeError: [If any other model type is specified other than RetinaNet/CenterNet/YOLOv4/TinyYOLOv4]
+      """
         
         if (output_path is None) or (input_path is None):
             raise RuntimeError ('Output_Path should not be None, & One of Camera_input OR Input_Path must be specified.')
@@ -414,7 +441,7 @@ class Object_Detection:
 
         """
                          The 'CustomObjects()' function allows you to handpick the type of objects you want to detect
-                         from an image. The objects are pre-initiated in the function variables and predefined as 'False',
+                         from an image or video. The objects are pre-initiated in the function variables and predefined as 'False',
                          which you can easily set to true for any number of objects available.  This function
                          returns a dictionary which must be parsed into the 'Detect_Custom_Objects_From_Image()' and 
                          'Detect_Custom_Objects_From_Video()'. 
@@ -469,20 +496,20 @@ class Object_Detection:
     def Detect_Custom_Objects_From_Image(self, custom_objects = None, input_path:str = None, output_path:str = None,
                                          minimum_percentage_probability:float = 0.5, extract_objects = False):
         
-        """
-        This Function is Used to Detect Custom Objects From Images. You must pass the custom Objects dictionary 
-        retruned from Custom_Objects() and input_path and output_path, otherwise it will raise the error.
-        
-        param: custom_objects (set to the dictionary returned from Custom_Objects())
-        param: input_path (path to the image in which you want to detect objects)
-        param: output_path (path to the directory where you want to save the output Image)
-        param: minimum_percentage_probability (threshold for object detection, anything detected with confidence less than
-                                               this will not be shown in output,
-                                               Only RetinaNet Supports it)
-        param: extract_objects (set it to True, if you want to extract the detected objects,
-                                Only RetinaNet Supports it)
-        
-        """
+      """[This function is used to detect custom objects from Images, it will detect only those objects
+      which are set to True in dictionary retruned from Custom_Objects() function]
+      
+      Args:
+        custom_objects: dictionary returned from Custom_Objects()
+        input_path: path to the input image with jpg/jpeg/png extension
+        output_path: path to save the output image with jpg/jpeg/png extension
+        minimum_percentage_probability: Anything detected with confidence less than its value will not be shown, Only RetinaNet supports it
+        extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+
+      Raises:
+          RuntimeError: [If custom_objects/input_path/output_path is not specified]
+          RuntimeError: [If any other model type is specified other than RetinaNet/CenterNet/YOLOv4/TinyYOLOv4]
+      """
         
         
         if (custom_objects is None) or (input_path is None) or (output_path is None):
@@ -519,19 +546,20 @@ class Object_Detection:
     def Detect_Custom_Objects_From_Video(self, custom_objects = None, input_path:str = None, output_path:str = None,
                                          minimum_percentage_probability:float = 0.25, extract_objects = False):
         
-        """
-        This Function is Used to Detect Custom Objects From Videos. You must pass the custom Objects dictionary 
-        retruned from Custom_Objects() and input_path and output_path, otherwise it will raise the error.
-        
-        param: custom_objects (set to the dictionary returned from Custom_Objects())
-        param: input_path (path to the video in which you want to detect objects)
-        param: output_path (path to the directory where you want to save the output Image)
-        param: minimum_percentage_probability (threshold for object detection, anything detected with confidence less than
-                                               this will not be shown in output,
-                                               Only RetinaNet Supports it)
-        param: extract_objects (set it to True, if you want to extract the detected objects,
-                                Only RetinaNet Supports it)
-        """
+      """[This function is used to detect custom objects from Videos, it will detect only those objects
+      which are set to True in dictionary retruned from Custom_Objects() function]
+      
+      Args:
+        custom_objects: dictionary returned from Custom_Objects()
+        input_path: path to the Video image with mp4/avi extension
+        output_path: path to save the output Video with mp4/avi extension
+        minimum_percentage_probability: Anything detected with confidence less than its value will not be shown, Only RetinaNet supports it
+        extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+
+      Raises:
+          RuntimeError: [If custom_objects/input_path/output_path is not specified]
+          RuntimeError: [If any other model type is specified other than RetinaNet/CenterNet/YOLOv4/TinyYOLOv4]
+      """
         
         if (custom_objects is None) or (input_path is None) or (output_path is None):
             raise RuntimeError ('Custom_Objects, Input_Path and Output_path should not be None.')

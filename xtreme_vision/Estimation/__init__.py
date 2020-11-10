@@ -31,17 +31,16 @@ from PIL import Image
 class Pose_Estimation:
     
     """
-    This is Pose_Estimation class in the Xtreme-Vision library, it provides the support of state-of-the-art model
-    like CenterNet for Human Pose Estimation. After Instantiating this class you can set its properties and use
-    pre-defined functions for detecting Human Pose out of the box.
-    
-    The Following Functions are required to be called for Human Pose Estimation:
-        
-        Use_CenterNet() # To Specify which Model You want to Use
-        
-        Detect_From_Image() # To Specify that you want to detect from Images
-        
-        Detect_From_Video() # To Specify that you want to detect from Videos
+    This is Pose-Estimation Class in Xtreme-Vision Library, it provides the support of State-Of-The-Art Models 
+    like CenterNet. After Instantiating this Class, you can set its properties and use pre-defined
+    functions for performing segmentation Tasks out of the box.
+
+    Note: Custom Segmenation only Supports Mask-RCNN
+
+        Use_CenterNet()                             # To Specify which Model to Use
+        Detect_From_Image()                         # To Detect from Images
+        Detect_From_Video()                         # To Detect from Videos
+
     """
 
     def __init__(self):
@@ -52,8 +51,8 @@ class Pose_Estimation:
   
     def Use_CenterNet(self):
         
-        """
-        This Function is used to Specify the Model Type to CenterNet and it Loads the Model.
+        """[This function is used to set the Model Type to CenterNet, Automatically downloads the 
+        weights file and Loads the Model.]
         """
 
         self.model = estimate()
@@ -66,14 +65,15 @@ class Pose_Estimation:
 
     def Detect_From_Image(self, input_path:str, output_path:str):
         
-        """
-        This Function is Used to Specify that you want to detect from Images, before calling this function
-        you have to call Use_CenterNet(), otherwise it will raise the Error.
-        Supported formats for Images are JPG, JPEF, PNG
+        """[This Function is used to detect pose from Images.]
         
-        
-        param: input_path (path to the input Image)
-        param: output_path (path where to save the output Image) e.g. output_path = './home/out.jpg'
+        Args:
+            input_path: (str) [path to the input image with jpg/jpeg/png extension]
+            output_path: (str) [path to save the output image with jpg/jpeg/png extension]
+ 
+        Raises:
+            RuntimeError: [If Model is not Loaded before using this Function]
+            RuntimeError: [If any othre Model type is specified other than CenterNet]
         """
         
         if self.modelLoaded != True:
@@ -90,13 +90,15 @@ class Pose_Estimation:
 
     def Detect_From_Video(self, input_path:str, output_path:str):
         
-        """
-        This function is used to specify that you want to detect from Videos, before calling this function 
-        you have to call Use_CenterNet(), otherwise it will raise the Error.
-        Supported Formats for Video are MP4, AVI,
+        """[This Function is used to detect pose from Videos.]
         
-        param: input_path (path to the Input Video)
-        param: output_path (path where to save the output Video) e.g. output_path = './home/out.mp4'
+        Args:
+            input_path: (str) [path to the input Video with mp4/avi extension]
+            output_path: (str) [path to save the output Video with mp4/avi extension]
+ 
+        Raises:
+            RuntimeError: [If Model is not Loaded before using this Function]
+            RuntimeError: [If any othre Model type is specified other than CenterNet]
         """
     
         if self.modelLoaded != True:
