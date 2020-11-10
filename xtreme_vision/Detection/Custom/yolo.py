@@ -178,18 +178,14 @@ class Train_YOLOv4:
             self.model.compile(optimizer = self.optimizer, loss_iou_type = 'ciou', loss_verbose=0)
         
         
-            def lr_scheduler(epoch):
-                if epoch < int(epochs * 0.5):
-                    return lr 
-                elif epoch < int(epochs * 0.7):
-                    return lr * 0.1
-                return lr * 0.01
+            def lr_scheduler(epoch, lr):
+                return lr * tf.math.exp(-0.1)
 
             self.model.fit(
                 self.train_dataset,
                 epochs = epochs,
                 callbacks=[
-                    callbacks.LearningRateScheduler(lr_scheduler),
+                    callbacks.LearningRateScheduler(lr_scheduler, verbose=1),
                     callbacks.TerminateOnNaN(),
                     callbacks.TensorBoard(
                         histogram_freq=1,
