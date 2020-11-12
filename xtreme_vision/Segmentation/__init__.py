@@ -24,12 +24,9 @@ SOFTWARE.
 
 
 from xtreme_vision.Segmentation.deeplab.semantic import semantic_segmentation
-from xtreme_vision.Segmentation.maskrcnn import MaskRCNN
-from xtreme_vision.Segmentation.maskrcnn import MaskRCNN
-import numpy as np
+from xtreme_vision.Segmentation.maskrcnn.instance import instance_segmentation
 import cv2
 import os
-from PIL import Image
 import tensorflow as tf
 
 
@@ -55,10 +52,7 @@ class Segmentation:
         self.weights_path = ""
         self.modelLoaded = False
         self.modelType = ""
-        self.custom_objects = None
 
-        self.input_path = ""
-        self.output_path = ""
 
     def Use_MaskRCNN(self, weights_path: str = None):
         """[This Function is used to set the Model Type to Mask-RCNN, Automatically downloads the weights
@@ -79,7 +73,7 @@ class Segmentation:
             else:
                 print('Downloading Weights File...\nPlease Wait...')
                 self.weights_path = tf.keras.utils.get_file('maskrcnn_weights.h5',
-                                                            'https://github.com/fizyr/keras-maskrcnn/releases/download/0.2.2/resnet50_coco_v0.2.0.h5',
+                                                            'https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5',
                                                             cache_subdir='weights/', cache_dir='xtreme_vision')
         else:
             if os.path.isfile(weights_path):
@@ -88,7 +82,7 @@ class Segmentation:
                 raise FileNotFoundError(
                     "Weights File Doesn't Exist at Provided Path. Please Provide Valid Path.")
 
-        self.model = MaskRCNN()
+        self.model = instance_segmentation()
         self.model.load_model(self.weights_path)
         self.modelLoaded = True
         self.modelType = 'maskrcnn'
@@ -126,15 +120,14 @@ class Segmentation:
         self.modelLoaded = True
         self.modelType = 'deeplab'
 
-    def Detect_From_Image(self, input_path: str, output_path: str, min_prob: float = 0.25, show_names: bool = False):
+    def Detect_From_Image(self, input_path:str, output_path:str, show_boxes:bool = False):
         
         """[This function is used to segment objects from Images]
 
         Args:
             input_path (str): [path to the input image with jpg/jpeg/png extension]
             output_path (str): [path to save the output image with jpg/jpeg/png extension]
-            min_prob (float, optional): [anything detected with confidence less than this, will not be shown. Only Mask-RCNN supports it]. Defaults to 0.25.
-            show_names (bool, optional): [wether to show the names of detected objects, Only Mask-RCNN supports it]. Defaults to False.
+            show_boxes (bool, optional): [wether to show the boxes of detected objects, Only Mask-RCNN supports it]. Defaults to False.
 
         Raises:
             RuntimeError: [If Model is not Loaded before Using this Function]
@@ -142,39 +135,31 @@ class Segmentation:
         """
 
         if self.modelLoaded != True:
-            raise RuntimeError(
-                'Before calling this function, you have to call Use_MaskRCNN().')
+            raise RuntimeError('Before calling this function, you have to specify which Model you want to Use.')
 
         else:
 
-            self.input_path = input_path
-            self.output_path = output_path
-            self.min_prob = min_prob
-            self.show_names = show_names
-
-            img = np.array(Image.open(self.input_path))[..., ::-1]
-
             if self.modelType == 'maskrcnn':
-                _ = self.model.predict(
-                    img, self.output_path, min_prob=self.min_prob, show_names=self.show_names)
+                
+                _, img = self.model.segmentImage(image_path=input_path, show_bboxes=show_boxes, output_image_name=output_path)
 
             elif self.modelType == 'deeplab':
-                raw_labels, img = self.model.segmentAsAde20k(
-                    self.input_path, self.output_path, overlay=True)
+                
+                _, img = self.model.segmentAsAde20k(input_path, output_path, overlay=True)
 
             else:
                 raise RuntimeError(
-                    'Invalid ModelType: Valid Types are "MaskRCNN"\t"DeepLab".')
+                    'Invalid ModelType: Valid Types are "MaskRCNN"\t"DeepLabv3".')
 
-    def Detect_From_Video(self, input_path: str, output_path: str, min_prob: float = 0.25, show_names: bool = False):
+    def Detect_From_Video(self, input_path:str, output_path:str, show_boxes:bool = False, fps:int = 25):
 
         """[This function is used to segment objects from Videos]
 
         Args:
             input_path (str): [path to the input video with mp4/avi extension]
             output_path (str): [path to save the output video with mp4/avi extension]
-            min_prob (float, optional): [anything detected with confidence less than this, will not be shown. Only Mask-RCNN supports it]. Defaults to 0.25.
-            show_names (bool, optional): [wether to show the names of detected objects, Only Mask-RCNN supports it]. Defaults to False.
+            show_boxes (bool, optional): [wether to show the boxes of detected objects, Only Mask-RCNN supports it]. Defaults to False.
+            fps (int, optional): [frames per second for video processing]
 
         Raises:
             RuntimeError: [If Model is not Loaded before Using this Function]
@@ -183,15 +168,10 @@ class Segmentation:
 
         if self.modelLoaded != True:
             raise RuntimeError(
-                'Before calling this function, you have to call Use_MaskRCNN().')
+                'Before calling this function, you have to specify which Model you want to Use.')
 
-        self.input_path = input_path
-        self.output_path = output_path
-        self.min_prob = min_prob
-        self.show_names = show_names
         out = None
-
-        cap = cv2.VideoCapture(self.input_path)
+        cap = cv2.VideoCapture(input_path)
 
         length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         print(f'\nThere are {length} Frames in this video')
@@ -204,23 +184,21 @@ class Segmentation:
             if not retreive:
                 break
 
-            fr = np.array(frame)[..., ::-1]
-
             if self.modelType == 'maskrcnn':
-                im = self.model.predict(
-                    fr, './', False, min_prob=self.min_prob, show_names=self.show_names)
+                
+                _, im = self.model.segmentFrame(frame, show_boxes)
 
             elif self.modelType == 'deeplab':
+                
                 _, im = self.model.segmentFrameAsAde20k(frame, overlay=True)
 
             else:
                 raise RuntimeError(
-                    'Invalid ModelType: Valid Types are  "MaskRCNN"\t"DeepLab".')
+                    'Invalid ModelType: Valid Types are  "MaskRCNN"\t"DeepLabv3".')
 
             if out is None:
-                fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-                out = cv2.VideoWriter(
-                    self.output_path, fourcc, 30, (frame.shape[1], frame.shape[0]))
+                fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+                out = cv2.VideoWriter(output_path, fourcc, fps, (frame.shape[1], frame.shape[0]))
 
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')
@@ -298,8 +276,8 @@ class Segmentation:
 
         return custom_objects_dict
 
-    def Detect_Custom_Objects_From_Image(self, custom_objects=None, input_path: str = None, output_path: str = None,
-                                         min_prob: float = 0.25, show_names: bool = False):
+    def Detect_Custom_Objects_From_Image(self, custom_objects=None, input_path:str = None, output_path:str = None,
+                                         show_boxes:bool = False):
         
         """[This function is used to detect custom objects from Images, it will only detect those objects which
         are set to True in dictionary returned from Custom_Objects() function.]
@@ -308,8 +286,7 @@ class Segmentation:
             custom_objects: (dict) [dictionary returned from Custom_Objects() function]
             input_path: (str) [path to the input Image with jpg/jpeg/png extension]
             output_path: (str) [path to save the output image with jpg/jpeg/png extension]
-            min_prob: (float) [anything detected with confidence less than this will not be shown]
-            show_names: (bool) [wether to show the names of detected objects]
+            show_boxes: (bool) [wether to show the boxes of detected objects]
  
         Raises:
             RuntimeError: [If custom_objects/input_path/output_path is not specified]
@@ -322,20 +299,12 @@ class Segmentation:
                 'Custom_Objects, Input_Path and Output_path should not be None.')
 
         else:
-            self.input_path = input_path
-            self.output_path = output_path
-            self.custom_objects = custom_objects
-            self.min_prob = min_prob
-            self.show_names = show_names
-
-            img = np.array(Image.open(self.input_path))[..., ::-1]
 
             if self.modelLoaded:
 
                 if (self.modelType == 'maskrcnn'):
 
-                    _ = self.model.predict(img, self.output_path, custom_objects=self.custom_objects,
-                                           min_prob=self.min_prob, show_names=self.show_names)
+                    _, img = self.model.segmentImage(input_path, show_boxes, output_path, custom=custom_objects)
                 else:
                     raise RuntimeError(
                         'Invalid ModelType: Valid Type is "MaskRCNN".')
@@ -344,8 +313,8 @@ class Segmentation:
                 raise RuntimeError(
                     'Before calling this function, you have to call Use_MaskRCNN().')
 
-    def Detect_Custom_Objects_From_Video(self, custom_objects=None, input_path: str = None, output_path: str = None,
-                                         min_prob: float = 0.25, show_names: bool = False):
+    def Detect_Custom_Objects_From_Video(self, custom_objects = None, input_path:str = None, output_path:str = None, 
+                                         show_boxes:bool = False, fps:int = 25):
        
         """[This function is used to detect custom objects from Videos, it will only detect those objects which
         are set to True in dictionary returned from Custom_Objects() function.]
@@ -354,8 +323,8 @@ class Segmentation:
             custom_objects: (dict) [dictionary returned from Custom_Objects() function]
             input_path: (str) [path to the input Video with mp4/avi extension]
             output_path: (str) [path to save the output Video with mp4/avi extension]
-            min_prob: (float) [anything detected with confidence less than this will not be shown]
-            show_names: (bool) [wether to show the names of detected objects]
+            show_boxes: (bool) [wether to show the boxes of detected objects]
+            fps: (int) [frames per second for video processing]
  
         Raises:
             RuntimeError: [If custom_objects/input_path/output_path is not specified]
@@ -368,17 +337,10 @@ class Segmentation:
                 'Custom_Objects, Input_Path and Output_path should not be None.')
 
         if self.modelLoaded != True:
-            raise RuntimeError(
-                'Before calling this function, you have to call Use_MaskRCNN().')
+            raise RuntimeError('Before calling this function, you have to specify which Model you want to Use.')
 
-        self.custom_objects = custom_objects
-        self.input_path = input_path
-        self.output_path = output_path
-        self.min_prob = min_prob
-        self.show_names = show_names
         out = None
-
-        cap = cv2.VideoCapture(self.input_path)
+        cap = cv2.VideoCapture(input_path)
 
         length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         print(f'\nThere are {length} Frames in this video')
@@ -391,20 +353,17 @@ class Segmentation:
             if not retreive:
                 break
 
-            frame = np.array(frame)[..., ::-1]
-
             if self.modelType == 'maskrcnn':
 
-                im = self.model.predict(frame, './', False, custom_objects=self.custom_objects,
-                                        min_prob=self.min_prob, show_names=self.show_names)
+                _, im = self.model.segmentFrame(frame, show_boxes, custom=custom_objects)
+            
             else:
                 raise RuntimeError(
                     'Invalid ModelType: Valid Type is "MaskRCNN".')
 
             if out is None:
-                fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-                out = cv2.VideoWriter(
-                    self.output_path, fourcc, 30, (frame.shape[1], frame.shape[0]))
+                fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+                out = cv2.VideoWriter(output_path, fourcc, fps, (frame.shape[1], frame.shape[0]))
 
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')

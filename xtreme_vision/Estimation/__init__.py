@@ -126,8 +126,8 @@ class Pose_Estimation:
                 raise RuntimeError ('Invalid ModelType: Valid Type Is "CenterNet"')
             
             if out is None:
-                fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-                out = cv2.VideoWriter(output_path, fourcc, 30, (frame.shape[1], frame.shape[0]))
+                fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+                out = cv2.VideoWriter(output_path, fourcc, 20, (frame.shape[1], frame.shape[0]))
             
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')
