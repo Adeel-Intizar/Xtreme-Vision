@@ -41,14 +41,13 @@ class Train_RetinaNet:
         self.num_classes = 0
         self.backbone = ''
 
-    def create_model(self, num_classes: int, freeze_backbone=True, backbone_retinanet: str = 'resnet50'):
+    def create_model(self, num_classes: int, freeze_backbone=False, backbone_retinanet: str = 'resnet50'):
         """ Creates model
 
     Args
-        backbone : A function to call to create a retinanet model with a given backbone.
         num_classes        : The number of classes to train.
         freeze_backbone    : If True, disables learning for the backbone.
-        config             : Config parameters, None indicates the default configuration.
+        backbone_retinanet : Available options are resnet50, resnet101, resnet50
 
     Returns
         model            : The base model. This is also the model that is saved in snapshots.
@@ -101,12 +100,12 @@ class Train_RetinaNet:
         self.model = model_with_weights(self.back.retinanet(
             self.num_classes, num_anchors=num_anchors, modifier=modifier, pyramid_levels=pyramid_levels), self.weights)
 
-    def load_data(self, train_annot_file: str, val_annot_file: str, csv_classes_file: str, train_data_dir: str, val_data_dir: str):
+    def load_data(self, train_annot_file:str, train_data_dir:str, csv_classes_file:str, val_annot_file:str = None,
+                  val_data_dir:str = None):
         """
         This Function is Used to Load the Data For Training the RetinaNet Model.
 
-        param: num_classes (Total Number of classes on which you are training the model)
-        param: csv_annot_file (Path to the CSV Annotations File)
+        param: annot_file (Path to the CSV Annotations File)
         param: csv_classes_file (Path to the CSV Classes File, mapping names to labels)
         param: data_dir (Relative path to directory with respect to annotations file)
         """
@@ -122,10 +121,33 @@ class Train_RetinaNet:
 
         self.train_gen = CSVGenerator(
             train_annot_file, csv_classes_file, train_data_dir, **common_args)
-        self.val_gen = CSVGenerator(
-            val_annot_file, csv_classes_file, val_data_dir, shuffle_groups=False, **common_args)
+        
+        
+        if (val_annot_file != None) and (val_data_dir != None):
+            self.val_gen = CSVGenerator(val_annot_file, csv_classes_file, val_data_dir, shuffle_groups=False, **common_args)
+            self.val_steps = 1
+        else:
+            self.val_gen = None
+            self.val_steps = None
 
-    def train(self, epochs: int, lr: float, steps_per_epoch: int, save_path: str = 'model.h5', restore_best_weights: bool = True):
+    def train(self, epochs: int, lr: float, steps_per_epoch: int, save_path: str = 'model.h5', nms:float= 0.2):
+        
+        """
+        
+        Parameters
+        ----------
+        epochs : int
+            Total Number of epochs to train the Model.
+        lr : float
+            learning rate to train the model.
+        steps_per_epoch : int
+            steps per epoch on training data.
+        save_path : str, optional
+            Path at which to save the Model after complete training. The default is 'model.h5'.
+        nms: int, optional
+    	    Non Maximum Supperession threshold
+
+        """
 
         self.model.compile(
             loss={
@@ -141,7 +163,7 @@ class Train_RetinaNet:
             tf.keras.callbacks.EarlyStopping(monitor='loss',
                                              patience=31,
                                              verbose=1,
-                                             restore_best_weights=restore_best_weights),
+                                             restore_best_weights=False),
             tf.keras.callbacks.TerminateOnNaN(),
             tf.keras.callbacks.LearningRateScheduler(sched, verbose=1)
         ]
@@ -150,7 +172,7 @@ class Train_RetinaNet:
                        steps_per_epoch=steps_per_epoch,
                        epochs=epochs,
                        validation_data=self.val_gen,
-                       validation_steps=1,
+                       validation_steps=self.val_steps,
                        callbacks=callbacks,
                        verbose=2)
 
@@ -160,6 +182,6 @@ class Train_RetinaNet:
                                   parallel_iterations=32,
                                   max_detections=300,
                                   score_threshold=0.05,
-                                  nms_threshold=0.5)
+                                  nms_threshold=nms)
 
         converted.save(save_path)

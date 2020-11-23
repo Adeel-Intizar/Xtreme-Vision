@@ -44,12 +44,13 @@ setup(
       'machine learning', 
       'deep learning', 
       'artificial intelligence',
-      'xtreme_vision', 
-      'image segmentation',
+      'xtreme vision', 
+      'segmentation',
       'yolo', 
       'retinanet',
       'centernet', 
       'yolov4', 
+      'deeplab',
       'tinyyolo'],
       
       install_requires = [
@@ -57,13 +58,17 @@ setup(
           'keras',
           'opencv-python',
           'numpy',
-          'Pillow',
+          'pillow',
           'matplotlib',
           'pandas',
           'scikit-learn',
           'progressbar2',
           'scipy',
-          'h5py'],
+          'h5py',
+	  'imgaug',
+	  'scikit-image',
+	  'labelme2coco',
+	  ],
       
       project_urls={
           

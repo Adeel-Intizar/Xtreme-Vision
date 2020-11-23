@@ -35,8 +35,6 @@ class Pose_Estimation:
     like CenterNet. After Instantiating this Class, you can set its properties and use pre-defined
     functions for performing segmentation Tasks out of the box.
 
-    Note: Custom Segmenation only Supports Mask-RCNN
-
         Use_CenterNet()                             # To Specify which Model to Use
         Detect_From_Image()                         # To Detect from Images
         Detect_From_Video()                         # To Detect from Videos
@@ -88,13 +86,14 @@ class Pose_Estimation:
         else:
             raise RuntimeError ('Invalid ModelType: Valid Type Is "CenterNet"')
 
-    def Detect_From_Video(self, input_path:str, output_path:str):
+    def Detect_From_Video(self, input_path:str, output_path:str, fps:int = 25):
         
         """[This Function is used to detect pose from Videos.]
         
         Args:
             input_path: (str) [path to the input Video with mp4/avi extension]
             output_path: (str) [path to save the output Video with mp4/avi extension]
+            fps: (int) [frames per second for video processing]
  
         Raises:
             RuntimeError: [If Model is not Loaded before using this Function]
@@ -127,7 +126,7 @@ class Pose_Estimation:
             
             if out is None:
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out = cv2.VideoWriter(output_path, fourcc, 20, (frame.shape[1], frame.shape[0]))
+                out = cv2.VideoWriter(output_path, fourcc, fps, (frame.shape[1], frame.shape[0]))
             
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')

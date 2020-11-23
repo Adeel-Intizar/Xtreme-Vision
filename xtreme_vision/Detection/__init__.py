@@ -321,7 +321,7 @@ class Object_Detection:
         Args:
           input_path: path to the input image with jpg/jpeg/png extension
           output_path: path to save the output image with jpg/jpeg/png extension
-         extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+          extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
 
         Raises:
             RuntimeError: [If input_path or output_path is not specified]
@@ -354,7 +354,7 @@ class Object_Detection:
                 _ = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score)
                 
                 
-    def Detect_From_Video(self, input_path:str, output_path:str, extract_objects = False):
+    def Detect_From_Video(self, input_path:str, output_path:str, extract_objects = False, fps:int = 25):
         
         """[This Function is used to Detect objects from Videos.]
       
@@ -362,6 +362,7 @@ class Object_Detection:
           input_path: path to the input video with mp4/avi extension
           output_path: path to save the output video with mp4/avi extension
           extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+          fps: frames per second for video processing
 
         Raises:
             RuntimeError: [If input_path or output_path is not specified]
@@ -412,7 +413,7 @@ class Object_Detection:
             
             if out is None:
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out = cv2.VideoWriter(self.output_path, fourcc, 20, (frame.shape[1], frame.shape[0]))
+                out = cv2.VideoWriter(self.output_path, fourcc, fps, (frame.shape[1], frame.shape[0]))
             
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')
@@ -544,7 +545,7 @@ class Object_Detection:
                     raise RuntimeError ('Invalid Model Type: Supported Models are: Retinanet\tCenterNet\tYOLOv4\tTinyYOLOv4.')
 
     def Detect_Custom_Objects_From_Video(self, custom_objects = None, input_path:str = None, output_path:str = None,
-                                         minimum_percentage_probability:float = 0.25, extract_objects = False):
+                                         minimum_percentage_probability:float = 0.25, extract_objects = False, fps:int = 25):
         
         """[This function is used to detect custom objects from Videos, it will detect only those objects
         which are set to True in dictionary retruned from Custom_Objects() function]
@@ -555,6 +556,7 @@ class Object_Detection:
           output_path: path to save the output Video with mp4/avi extension
           minimum_percentage_probability: Anything detected with confidence less than its value will not be shown, Only RetinaNet supports it
           extract_objects: set it to True, if you want to extract detected objects, Only RetinaNet supports it
+          fps: frames per second for video processing
 
         Raises:
             RuntimeError: [If custom_objects/input_path/output_path is not specified]
@@ -605,7 +607,7 @@ class Object_Detection:
 
             if out is None:
                 fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-                out = cv2.VideoWriter(self.output_path, fourcc, 20, (frame.shape[1], frame.shape[0]))
+                out = cv2.VideoWriter(self.output_path, fourcc, fps, (frame.shape[1], frame.shape[0]))
             
             out.write(im)
         print('Done. Processing has been Finished... Please Check Output Video.')

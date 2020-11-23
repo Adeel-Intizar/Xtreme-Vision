@@ -1,0 +1,6 @@
+Added Support of RetinaNet Training with (resnet50, resnet101, resnet152).
+Made validation data optional for Training RetinaNet and YOLO Models.
+Added DeepLabv3+ for Semantic Segmentation
+Added Dynamic Learning rate
+Updated Documentation
+More Efficient and Stable
