@@ -25,8 +25,10 @@ SOFTWARE.
 
 from xtreme_vision.Segmentation.deeplab.semantic import semantic_segmentation
 from xtreme_vision.Segmentation.maskrcnn.instance import instance_segmentation
+from xtreme_vision.Segmentation.cdcl.inference_15parts import run_image, run_video
 import cv2
 import os
+import sys
 import tensorflow as tf
 
 
@@ -120,6 +122,20 @@ class Segmentation:
         self.modelLoaded = True
         self.modelType = 'deeplab'
 
+    def Use_PersonPart(self, weights_path:str=None):
+        
+        if weights_path is not None:
+            if os.path.isfile(weights_path):
+                self.weights_path = weights_path
+            else:
+                raise FileNotFoundError("Weights File Doesn't Exist at provided path.")
+        else:
+            pass
+        
+        self.modelLoaded = True
+        self.modelType = 'cdcl'
+
+    
     def Detect_From_Image(self, input_path:str, output_path:str, show_boxes:bool = False):
         
         """[This function is used to segment objects from Images]
@@ -147,6 +163,10 @@ class Segmentation:
                 
                 _, img = self.model.segmentAsAde20k(input_path, output_path, overlay=True)
 
+            elif self.modelType == 'cdcl':
+                
+                _ = run_image(input_path, output_path)
+
             else:
                 raise RuntimeError(
                     'Invalid ModelType: Valid Types are "MaskRCNN"\t"DeepLabv3".')
@@ -170,15 +190,18 @@ class Segmentation:
             raise RuntimeError(
                 'Before calling this function, you have to specify which Model you want to Use.')
 
+        if self.modelType == 'cdcl':
+            vid = run_video(input_path, output_path, fps)
+            sys.exit()
+        
         out = None
         cap = cv2.VideoCapture(input_path)
-
         length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         print(f'\nThere are {length} Frames in this video')
         print('-' * 20)
         print('Detecting Objects in the Video... Please Wait...')
-        print('-' * 20)
-
+        print('-' * 20)        
+        
         while(cap.isOpened()):
             retreive, frame = cap.read()
             if not retreive:
@@ -191,7 +214,7 @@ class Segmentation:
             elif self.modelType == 'deeplab':
                 
                 _, im = self.model.segmentFrameAsAde20k(frame, overlay=True)
-
+            
             else:
                 raise RuntimeError(
                     'Invalid ModelType: Valid Types are  "MaskRCNN"\t"DeepLabv3".')

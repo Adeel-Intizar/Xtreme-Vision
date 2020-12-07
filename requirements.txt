@@ -12,3 +12,4 @@ labelme2coco
 imgaug
 scipy
 h5py
+configobj

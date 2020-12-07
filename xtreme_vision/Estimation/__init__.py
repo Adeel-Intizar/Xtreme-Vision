@@ -23,8 +23,10 @@ SOFTWARE.
 """
 
 from xtreme_vision.Detection.centernet import PoseEstimation as estimate
+from xtreme_vision.Segmentation.cdcl.inference_15parts_skeletons import run_image, run_video
 import numpy as np
 import cv2
+import sys
 from PIL import Image
 
 
@@ -47,7 +49,7 @@ class Pose_Estimation:
         self.modelLoaded = False
         self.modelType = None
   
-    def Use_CenterNet(self):
+    def Use_CenterNet(self, weights_path:str = None):
         
         """[This function is used to set the Model Type to CenterNet, Automatically downloads the 
         weights file and Loads the Model.]
@@ -57,10 +59,16 @@ class Pose_Estimation:
         print('-' * 20)
         print('Loading the Model \n Please Wait...')
         print('-' * 20)
-        self.model.load_model()
+        self.model.load_model(weights_path)
         self.modelLoaded = True
         self.modelType = 'centernet'   
 
+    
+    def Use_CDCL(self):
+
+        self.modelLoaded = True
+        self.modelType = 'cdcl'
+    
     def Detect_From_Image(self, input_path:str, output_path:str):
         
         """[This Function is used to detect pose from Images.]
@@ -83,6 +91,10 @@ class Pose_Estimation:
             
             _ = self.model.predict(img = img, output_path = output_path, debug = True) 
                   
+        elif self.modelType == 'cdcl':
+
+            _ = run_image(input_path, output_path)
+        
         else:
             raise RuntimeError ('Invalid ModelType: Valid Type Is "CenterNet"')
 
@@ -103,6 +115,10 @@ class Pose_Estimation:
         if self.modelLoaded != True:
             raise RuntimeError ('Before calling this function, you have to call Use_CenterNet().')
 
+        if self.modelType == 'cdcl':
+            _ = run_video(input_path, output_path, fps)
+            sys.exit()
+        
         out = None
         cap = cv2.VideoCapture(input_path)
         length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))

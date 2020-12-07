@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setup(
       name = 'xtreme_vision',
       version = __version__,
-      description = 'A Python Library for Computer-Vision related Tasks',
+      description = 'A Python Library for Computer Vision tasks like Object Detection, Segmentation, Pose Estimation etc',
       url = "https://github.com/Adeel-Intizar/Xtreme-Vision",
       author = "Adeel Intizar",
       author_email = "kingadeel2017@outlook.com",
@@ -68,6 +68,7 @@ setup(
 	  'imgaug',
 	  'scikit-image',
 	  'labelme2coco',
+	  'configobj',
 	  ],
       
       project_urls={

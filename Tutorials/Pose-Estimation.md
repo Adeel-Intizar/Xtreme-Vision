@@ -24,7 +24,7 @@ Image.open('out.jpg')
 from xtreme_vision.Estimation import Pose_Estimation
 
 model = Pose_Estimation()
-model.Use_CenterNet()
+model.Use_CDCL()
 model.Detect_From_Video(input_path = 'video.mp4', 
                         output_path = 'pose.mp4')
 ```
@@ -33,7 +33,7 @@ model.Detect_From_Video(input_path = 'video.mp4',
 ```python
 from xtreme_vision.Estimation import Pose_Estimation
 model = Pose_Estimation()
-model.Use_CenterNet()
+model.Use_CenterNet() or model.Use_CDCL()
 ```
 The First Line imports Pose_Estimation Class from Xtreme-Vision Library and
 second line Instantiates the this Class.

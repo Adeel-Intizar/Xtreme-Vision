@@ -1,3 +1,14 @@
+v1.5
+Added Person Part Segmentation Using CDCL (Cross Domain Complementary Learning)
+Added Pose Estimation Using CDCL
+Minor Bug fixes
+Updated Documentation
+More Stable
+
+
+
+v1.4:
+
 Added Support of RetinaNet Training with (resnet50, resnet101, resnet152).
 Made validation data optional for Training RetinaNet and YOLO Models.
 Added DeepLabv3+ for Semantic Segmentation
