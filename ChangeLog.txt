@@ -1,4 +1,12 @@
+v1.5.1
+
+Minor Bug Fixes
+More Stable and Efficient
+
+
+
 v1.5
+
 Added Person Part Segmentation Using CDCL (Cross Domain Complementary Learning)
 Added Pose Estimation Using CDCL
 Minor Bug fixes
