@@ -31,9 +31,7 @@ For Custom Training It Provides:
 
 ![](assets/pose.gif)
 
->In Future it will provide solution for a wide variety of Computer-Vision Tasks such as Object-Detection, Pose-Estimation, Object Segmentation, Image-Prediction, Auto-Encoders and GANs with **2d and 3D Models** and it will support More State-Of-the-Art Algorithms.
-
->If You Like this Project Please do support it by donating here [![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar)
+>If You Like this Project, Sponser it here [![Build Status](https://camo.githubusercontent.com/6446a7907a4d4f8de024ec85750feb07d7914658/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f70617472656f6e2d646f6e6174652d79656c6c6f772e737667)](https://patreon.com/adeelintizar)
 
 
 ### Dependencies:

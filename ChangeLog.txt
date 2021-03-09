@@ -1,3 +1,9 @@
+v 1.6
+
+CDCL Config Error fixed
+Modified CenterNet
+
+
 v1.5.1
 
 Minor Bug Fixes

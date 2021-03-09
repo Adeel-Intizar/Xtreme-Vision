@@ -1,0 +1,15 @@
+tensorflow
+keras
+opencv-python
+numpy
+pillow
+matplotlib
+pandas
+scikit-learn
+progressbar2
+scipy
+h5py
+imgaug
+scikit-image
+labelme2coco
+configobj

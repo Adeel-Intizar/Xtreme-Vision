@@ -16,6 +16,7 @@ setup(
       long_description = long_description,
       long_description_content_type="text/markdown",
       packages = find_packages(),
+      include_package_data=True,
       python_requires='>=3.5, <4',
       classifiers = [
           'Development Status :: 5 - Production/Stable',
@@ -30,12 +31,9 @@ setup(
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
-          'Programming Language :: Python :: Implementation',
-          'Topic :: Scientific/Engineering',
           'Topic :: Scientific/Engineering :: Artificial Intelligence',
           'Topic :: Scientific/Engineering :: Image Processing',
-          'Topic :: Scientific/Engineering :: Image Recognition',
-          'Topic :: Software Development :: Libraries :: Python Modules'
+          'Topic :: Scientific/Engineering :: Image Recognition'
           ],
       keywords = [
       "object detection", 
