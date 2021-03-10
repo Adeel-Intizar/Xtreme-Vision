@@ -23,4 +23,4 @@ SOFTWARE.
 """
 __author__ = "Adeel Intizar"
 __email__ = "kingadeel2017@outlook.com"
-__version__ = "1.6"
+__version__ = "1.6.1"

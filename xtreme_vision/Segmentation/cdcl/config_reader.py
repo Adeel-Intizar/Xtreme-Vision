@@ -3,7 +3,7 @@ import numpy as np
 
 
 def config_reader():
-    config = ConfigObj('config')
+    config = ConfigObj('xtreme_vision/Segmentation/cdcl/config')
 
     param = config['param']
     model_id = param['modelID']
