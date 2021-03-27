@@ -1,9 +1,11 @@
 from configobj import ConfigObj
 import numpy as np
+import os
 
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))+'/config'
 
 def config_reader():
-    config = ConfigObj('xtreme_vision/Segmentation/cdcl/config')
+    config = ConfigObj(BASE_PATH)
 
     param = config['param']
     model_id = param['modelID']
