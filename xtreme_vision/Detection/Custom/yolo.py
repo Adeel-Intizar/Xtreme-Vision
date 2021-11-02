@@ -162,7 +162,7 @@ class Train_YOLOv4:
         self.model.load_weights(self.weights_path, weights_type = 'yolo')
         
 
-    def train(self, epochs:int, lr:float, steps_per_epoch:int=1):
+    def train(self, epochs:int, lr:float, steps_per_epoch:int=1, verbose=1):
         
         """
         This function is used to Train the model, it uses Adam Optimizer to train, and it saves the weights of every 
@@ -177,7 +177,7 @@ class Train_YOLOv4:
         
         if (self.modelType=='yolov4'):
             self.optimizer = optimizers.Adam(learning_rate = lr)
-            self.model.compile(optimizer = self.optimizer, loss_iou_type = 'ciou', loss_verbose=0)
+            self.model.compile(optimizer = self.optimizer, loss_iou_type = 'ciou', loss_verbose=verbose)
         
         
             def lr_scheduler(epoch, lr):
