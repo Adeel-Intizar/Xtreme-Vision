@@ -339,7 +339,12 @@ class Object_Detection:
             self.input_path = input_path
             self.output_path = output_path
             
-            img = np.array(Image.open(self.input_path))[..., ::-1]
+            if type(input_path) == 'str':
+                img = np.array(Image.open(self.input_path))[..., ::-1]
+            elif type(input_path) == np.ndarray:
+                img = input_path
+            else:
+                raise RuntimeError("Invalid Input Image")
             
             if self.modelType == 'retinanet':
                 _ = self.model.predict(img, self.output_path, debug = True, extract_objects = extract_objects)
