@@ -339,7 +339,7 @@ class Object_Detection:
             self.input_path = input_path
             self.output_path = output_path
             
-            if type(input_path) == 'str':
+            if type(input_path) == str:
                 img = np.array(Image.open(self.input_path))[..., ::-1]
             elif type(input_path) == np.ndarray:
                 img = input_path
