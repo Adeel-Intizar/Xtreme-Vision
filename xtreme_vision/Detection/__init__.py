@@ -359,8 +359,10 @@ class Object_Detection:
                     return result
                 
             elif self.modelType == 'tinyyolo':
-                _ = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score)
+                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score)
                 
+                if return_Img:
+                    return result
                 
                 
                 
