@@ -314,7 +314,7 @@ class Object_Detection:
         self.modelLoaded = True
         self.modelType = 'tinyyolo'
         
-    def Detect_From_Image(self, input_path:str, output_path:str, extract_objects = False, return_Img = False):
+    def Detect_From_Image(self, input_path:str, output_path:str, extract_objects = False, return_Img = False, save_output = False):
         
         """[This Function is used to Detect objects from Images]
       
@@ -353,13 +353,13 @@ class Object_Detection:
                 _ = self.model.predict(img, self.output_path, debug = True)
                 
             elif self.modelType == 'yolo':
-                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score)
+                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score, debug = save_output)
                 
                 if return_Img:
                     return result
                 
             elif self.modelType == 'tinyyolo':
-                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score)
+                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score, debug = save_output)
                 
                 if return_Img:
                     return result
