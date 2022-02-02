@@ -353,13 +353,13 @@ class Object_Detection:
                 _ = self.model.predict(img, self.output_path, debug = True)
                 
             elif self.modelType == 'yolo':
-                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score, debug = save_output)
+                result = self.model.predict(img, self.output_path, iou = self.iou, score = self.score, debug = save_output)
                 
                 if return_Img:
                     return result
                 
             elif self.modelType == 'tinyyolo':
-                result = self.model.predict(img, self.output_path, debug = True, iou = self.iou, score = self.score, debug = save_output)
+                result = self.model.predict(img, self.output_path, iou = self.iou, score = self.score, debug = save_output)
                 
                 if return_Img:
                     return result
