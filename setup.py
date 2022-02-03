@@ -53,7 +53,6 @@ setup(
       
       install_requires = [
           "tensorflow", 
-          'keras',
           'opencv-python',
           'numpy',
           'pillow',
