@@ -130,7 +130,7 @@ class Train_YOLOv4:
         self.train_dataset = self.model.load_dataset(train_images_file, image_path_prefix = train_img_dir, dataset_type="yolo")
         
         if (val_images_file != None) and (val_img_dir != None):
-            self.val_dataset = self.model.load_dataset(val_images_file, image_path_prefix = val_img_dir, training = False)
+            self.val_dataset = self.model.load_dataset(val_images_file, image_path_prefix = val_img_dir, training = False, dataset_type="yolo")
             self.val_steps = 5
         else:
             self.val_dataset = None
